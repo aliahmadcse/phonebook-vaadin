@@ -1,43 +1,111 @@
 package codes.aliahmad.phonebook.view;
 
-import codes.aliahmad.phonebook.service.GreetService;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import codes.aliahmad.phonebook.model.PhoneBook;
+import codes.aliahmad.phonebook.provider.PhoneBookDataProvider;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.component.crud.BinderCrudEditor;
+import com.vaadin.flow.component.crud.Crud;
+import com.vaadin.flow.component.crud.CrudEditor;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.data.binder.Binder;
 
-/**
- * The main view contains a text field for getting the user name and a button
- * that shows a greeting message in a notification.
- */
+import java.util.Arrays;
+import java.util.List;
+
 @Route("")
-public class MainView extends VerticalLayout {
+public class MainView extends Div
+{
+  private Crud<PhoneBook> crud;
 
-    public MainView() {
-        // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
-        textField.addClassName("bordered");
-        // Button click listeners can be defined as lambda expressions
-        GreetService greetService = new GreetService();
-        Button button = new Button("Say hello", e -> {
-            add(new Paragraph(greetService.greet(textField.getValue())));
-        });
+  private String FIRST_NAME = "firstName";
+  private String LAST_NAME = "lastName";
+  private String EMAIL = "email";
 
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button is more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+  public MainView()
+  {
+    crud = new Crud<>(PhoneBook.class, createEditor());
 
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
+    setupGrid();
+    setupDataProvider();
 
-        // Use custom CSS classes to apply styling. This is defined in
-        // styles.css.
-        addClassName("centered-content");
+    add(crud);
+  }
 
-        add(textField, button);
-    }
+  private CrudEditor<PhoneBook> createEditor()
+  {
+    TextField firstName = new TextField("First name");
+    TextField lastName = new TextField("Last name");
+    TextField street = new TextField("Street");
+    TextField city = new TextField("City");
+    TextField country = new TextField("Country");
+    TextField phone = new TextField("Phone");
+    EmailField email = new EmailField("Email");
+
+    FormLayout form = new FormLayout(firstName, lastName, street, city, country, phone,
+            email);
+
+    Binder<PhoneBook> binder = new Binder<>(PhoneBook.class);
+    binder.forField(firstName).asRequired().bind(PhoneBook::getFirstName,
+            PhoneBook::setFirstName);
+    binder.forField(lastName).asRequired().bind(PhoneBook::getLastName,
+            PhoneBook::setLastName);
+    binder.forField(street).asRequired().bind(PhoneBook::getStreet,
+            PhoneBook::setStreet);
+    binder.forField(city).asRequired().bind(PhoneBook::getCity,
+            PhoneBook::setCity);
+    binder.forField(country).asRequired().bind(PhoneBook::getCountry,
+            PhoneBook::setCountry);
+    binder.forField(phone).asRequired().bind(PhoneBook::getPhone,
+            PhoneBook::setPhone);
+    binder.forField(email).asRequired().bind(PhoneBook::getEmail,
+            PhoneBook::setEmail);
+
+    return new BinderCrudEditor<>(binder, form);
+  }
+
+  private void setupGrid()
+  {
+    Grid<PhoneBook> grid = crud.getGrid();
+
+    // Remove edit column
+    Crud.removeEditColumn(grid);
+//     grid.removeColumnByKey(EDIT_COLUMN);
+    // grid.removeColumn(grid.getColumnByKey(EDIT_COLUMN));
+
+    // Open editor on double click
+    grid.addItemDoubleClickListener(event -> crud.edit(event.getItem(),
+            Crud.EditMode.EXISTING_ITEM));
+
+
+    // Only show these columns (all columns shown by default):
+    List<String> visibleColumns = Arrays.asList(FIRST_NAME, LAST_NAME,
+            EMAIL);
+
+    grid.getColumns().forEach(column -> {
+      String key = column.getKey();
+      if (!visibleColumns.contains(key))
+      {
+        grid.removeColumn(column);
+      }
+    });
+
+    // Reorder the columns (alphabetical by default)
+    grid.setColumnOrder(grid.getColumnByKey(FIRST_NAME),
+            grid.getColumnByKey(LAST_NAME), grid.getColumnByKey(EMAIL));
+  }
+
+  private void setupDataProvider()
+  {
+    PhoneBookDataProvider dataProvider = new PhoneBookDataProvider();
+    crud.setDataProvider(dataProvider);
+    crud.addDeleteListener(
+            deleteEvent -> dataProvider.delete(deleteEvent.getItem()));
+    crud.addSaveListener(
+            saveEvent -> dataProvider.persist(saveEvent.getItem()));
+  }
+
 }
