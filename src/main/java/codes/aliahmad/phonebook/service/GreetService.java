@@ -1,4 +1,4 @@
-package org.vaadin.example;
+package codes.aliahmad.phonebook.service;
 
 public class GreetService {
 

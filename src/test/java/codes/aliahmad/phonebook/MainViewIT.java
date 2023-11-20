@@ -1,4 +1,4 @@
-package org.vaadin.example;
+package codes.aliahmad.phonebook;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.html.testbench.ParagraphElement;
 import com.vaadin.flow.component.textfield.testbench.TextFieldElement;
-import com.vaadin.flow.theme.lumo.Lumo;
 import org.openqa.selenium.Keys;
 import com.vaadin.testbench.BrowserTest;
 import com.vaadin.testbench.BrowserTestBase;
