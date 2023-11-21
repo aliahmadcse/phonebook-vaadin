@@ -19,4 +19,6 @@ public interface DataService
   boolean existsByPhoneNumber(String phoneNumber);
 
   PhoneBook findByPhoneNumber(String phoneNumber);
+
+  boolean existsByPhoneNumberAndIdNot(String phoneNumber, Integer id);
 }

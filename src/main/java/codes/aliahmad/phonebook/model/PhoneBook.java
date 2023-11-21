@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+import java.util.Objects;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,5 +25,27 @@ public class PhoneBook
   private String country;
   private String phone;
   private String email;
-//  private String lastUpdatedAt;
+  private Date lastUpdatedAt;
+
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o)
+    {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+    PhoneBook phoneBook = (PhoneBook) o;
+    return Objects.equals(id, phoneBook.id);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(id);
+  }
 }

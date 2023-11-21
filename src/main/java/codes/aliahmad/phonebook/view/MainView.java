@@ -22,6 +22,8 @@ public class MainView extends Div
   private final Crud<PhoneBook> crud;
   private final PhoneBookDataProvider dataProvider;
 
+  private PhoneBook editingPhoneBook;
+
   private final String FIRST_NAME = "firstName";
   private final String LAST_NAME = "lastName";
   private final String EMAIL = "email";
@@ -62,8 +64,11 @@ public class MainView extends Div
     binder.forField(country).asRequired().bind(PhoneBook::getCountry,
             PhoneBook::setCountry);
 
-    binder.forField(phone).asRequired().withValidator(phoneNumber -> )
+//    take the validation logic into a separate class
+    binder.forField(phone).asRequired()
+            .withValidator(phoneNumber -> dataProvider.isPhoneNumberValid(phoneNumber, editingPhoneBook), "Phone Number already exist")
             .bind(PhoneBook::getPhone, PhoneBook::setPhone);
+
     binder.forField(email).asRequired().bind(PhoneBook::getEmail,
             PhoneBook::setEmail);
 
@@ -74,14 +79,11 @@ public class MainView extends Div
   {
     Grid<PhoneBook> grid = crud.getGrid();
 
-    // Remove edit column
-//    Crud.removeEditColumn(grid);
-//     grid.removeColumnByKey(EDIT_COLUMN);
-//     grid.removeColumn(grid.getColumnByKey(EDIT_COLUMN));
-
     // Open editor on double click
-    grid.addItemDoubleClickListener(event -> crud.edit(event.getItem(), Crud.EditMode.EXISTING_ITEM));
-
+    grid.addItemDoubleClickListener(event -> {
+      editingPhoneBook = event.getItem();
+      crud.edit(event.getItem(), Crud.EditMode.EXISTING_ITEM);
+    });
 
     // Only show these columns (all columns shown by default):
     List<String> visibleColumns = Arrays.asList(FIRST_NAME, LAST_NAME,

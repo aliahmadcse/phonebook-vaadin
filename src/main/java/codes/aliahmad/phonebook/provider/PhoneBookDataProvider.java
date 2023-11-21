@@ -4,7 +4,6 @@ import codes.aliahmad.phonebook.data.DataService;
 import codes.aliahmad.phonebook.data.InMemoryDataService;
 import codes.aliahmad.phonebook.model.PhoneBook;
 import com.vaadin.flow.component.crud.CrudFilter;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -145,10 +144,12 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
     dataService.delete(item.getId());
   }
 
-  public boolean isPhoneNumberValid(String phoneNumber)
+  public boolean isPhoneNumberValid(String phoneNumber, PhoneBook editingPhoneBook)
   {
-    dataService.findByPhoneNumber(phoneNumber);
-
-    return !dataService.existsByPhoneNumber(phoneNumber);
+    if (editingPhoneBook == null)
+    {
+      return !dataService.existsByPhoneNumber(phoneNumber);
+    }
+    return !dataService.existsByPhoneNumberAndIdNot(phoneNumber, editingPhoneBook.getId());
   }
 }
