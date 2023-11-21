@@ -20,6 +20,7 @@ import java.util.List;
 public class MainView extends Div
 {
   private final Crud<PhoneBook> crud;
+  private final PhoneBookDataProvider dataProvider;
 
   private final String FIRST_NAME = "firstName";
   private final String LAST_NAME = "lastName";
@@ -27,6 +28,7 @@ public class MainView extends Div
 
   public MainView()
   {
+    dataProvider = new PhoneBookDataProvider();
     crud = new Crud<>(PhoneBook.class, createEditor());
 
     setupGrid();
@@ -59,8 +61,9 @@ public class MainView extends Div
             PhoneBook::setCity);
     binder.forField(country).asRequired().bind(PhoneBook::getCountry,
             PhoneBook::setCountry);
-    binder.forField(phone).asRequired().bind(PhoneBook::getPhone,
-            PhoneBook::setPhone);
+
+    binder.forField(phone).asRequired().withValidator(phoneNumber -> )
+            .bind(PhoneBook::getPhone, PhoneBook::setPhone);
     binder.forField(email).asRequired().bind(PhoneBook::getEmail,
             PhoneBook::setEmail);
 
@@ -72,13 +75,12 @@ public class MainView extends Div
     Grid<PhoneBook> grid = crud.getGrid();
 
     // Remove edit column
-    Crud.removeEditColumn(grid);
+//    Crud.removeEditColumn(grid);
 //     grid.removeColumnByKey(EDIT_COLUMN);
-    // grid.removeColumn(grid.getColumnByKey(EDIT_COLUMN));
+//     grid.removeColumn(grid.getColumnByKey(EDIT_COLUMN));
 
     // Open editor on double click
-    grid.addItemDoubleClickListener(event -> crud.edit(event.getItem(),
-            Crud.EditMode.EXISTING_ITEM));
+    grid.addItemDoubleClickListener(event -> crud.edit(event.getItem(), Crud.EditMode.EXISTING_ITEM));
 
 
     // Only show these columns (all columns shown by default):
@@ -100,7 +102,6 @@ public class MainView extends Div
 
   private void setupDataProvider()
   {
-    PhoneBookDataProvider dataProvider = new PhoneBookDataProvider();
     crud.setDataProvider(dataProvider);
     crud.addDeleteListener(
             deleteEvent -> dataProvider.delete(deleteEvent.getItem()));

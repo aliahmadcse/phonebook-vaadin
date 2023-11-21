@@ -6,13 +6,17 @@ import java.util.List;
 
 public interface DataService
 {
-  List<PhoneBook> getAll();
+  List<PhoneBook> findAll();
 
-  PhoneBook findByPhoneNumber(String phone);
+  PhoneBook findById(Integer id);
 
-  PhoneBook save(PhoneBook phoneBook);
+  PhoneBook create(PhoneBook phoneBook);
 
-  PhoneBook delete(String phone);
+  PhoneBook delete(Integer id);
 
-  PhoneBook edit(PhoneBook phoneBook);
+  PhoneBook update(PhoneBook phoneBook);
+
+  boolean existsByPhoneNumber(String phoneNumber);
+
+  PhoneBook findByPhoneNumber(String phoneNumber);
 }

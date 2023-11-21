@@ -4,6 +4,7 @@ import codes.aliahmad.phonebook.data.DataService;
 import codes.aliahmad.phonebook.data.InMemoryDataService;
 import codes.aliahmad.phonebook.model.PhoneBook;
 import com.vaadin.flow.component.crud.CrudFilter;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -15,7 +16,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.vaadin.flow.component.icon.VaadinIcon.DATABASE;
 import static java.util.Comparator.naturalOrder;
 
 public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook, CrudFilter>
@@ -30,7 +30,7 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
     int offset = query.getOffset();
     int limit = query.getLimit();
 
-    Stream<PhoneBook> stream = dataService.getAll().stream();
+    Stream<PhoneBook> stream = dataService.findAll().stream();
 
     if (query.getFilter().isPresent())
     {
@@ -120,31 +120,35 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   public void persist(PhoneBook item)
   {
-    if (item.getId() == null)
-    {
-      item.setId(dataService.getAll().stream().map(PhoneBook::getId).max(naturalOrder())
-              .orElse(0) + 1);
-    }
+    boolean existingItem = item.getId() != null;
 
-    final Optional<PhoneBook> existingItem = find(item.getId());
-    if (existingItem.isPresent())
+    if (!existingItem)
     {
-      dataService.edit(item);
+      item.setId(dataService.findAll().stream().map(PhoneBook::getId).max(naturalOrder())
+              .orElse(0) + 1);
+      dataService.create(item);
     }
     else
     {
-      dataService.save(item);
+      dataService.update(item);
     }
   }
 
   Optional<PhoneBook> find(Integer id)
   {
-    return dataService.getAll().stream().filter(entity -> entity.getId().equals(id))
+    return dataService.findAll().stream().filter(entity -> entity.getId().equals(id))
             .findFirst();
   }
 
   public void delete(PhoneBook item)
   {
-    dataService.delete(item.getPhone());
+    dataService.delete(item.getId());
+  }
+
+  public boolean isPhoneNumberValid(String phoneNumber)
+  {
+    dataService.findByPhoneNumber(phoneNumber);
+
+    return !dataService.existsByPhoneNumber(phoneNumber);
   }
 }
