@@ -14,6 +14,7 @@ import lombok.Setter;
 @Setter
 public class PhoneBook
 {
+  private Integer id;
   private String firstName;
   private String lastName;
   private String street;
@@ -21,4 +22,5 @@ public class PhoneBook
   private String country;
   private String phone;
   private String email;
+//  private String lastUpdatedAt;
 }

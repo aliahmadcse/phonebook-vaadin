@@ -47,11 +47,11 @@ public class InMemoryDataService implements DataService
 
   public void initialize()
   {
-    phoneBookMap.put("09123456789", new PhoneBook("John", "Doe", "123 Main St", "Cityville", "Countryland", "09123456789", "john.doe@example.com"));
-    phoneBookMap.put("09234567890", new PhoneBook("Jane", "Smith", "456 Oak St", "Townsville", "Countryland", "09234567890", "jane.smith@example.com"));
-    phoneBookMap.put("09345678901", new PhoneBook("Bob", "Johnson", "789 Pine St", "Villagetown", "Countryland", "09345678901", "bob.johnson@example.com"));
-    phoneBookMap.put("09456789012", new PhoneBook("Alice", "Brown", "321 Cedar St", "Cityville", "Countryland", "09456789012", "alice.brown@example.com"));
-    phoneBookMap.put("09556789013", new PhoneBook("Tom", "Davis", "654 Birch St", "Townsville", "Countryland", "09556789013", "tom.davis@example.com"));
-    phoneBookMap.put("09656789014", new PhoneBook("Sara", "Miller", "987 Walnut St", "Villagetown", "Countryland", "09656789014", "sara.miller@example.com"));
+    phoneBookMap.put("09123456789", new PhoneBook(1, "John", "Doe", "123 Main St", "Cityville", "Countryland", "09123456789", "john.doe@example.com"));
+    phoneBookMap.put("09234567890", new PhoneBook(2, "Jane", "Smith", "456 Oak St", "Townsville", "Countryland", "09234567890", "jane.smith@example.com"));
+    phoneBookMap.put("09345678901", new PhoneBook(3, "Bob", "Johnson", "789 Pine St", "Villagetown", "Countryland", "09345678901", "bob.johnson@example.com"));
+    phoneBookMap.put("09456789012", new PhoneBook(4, "Alice", "Brown", "321 Cedar St", "Cityville", "Countryland", "09456789012", "alice.brown@example.com"));
+    phoneBookMap.put("09556789013", new PhoneBook(5, "Tom", "Davis", "654 Birch St", "Townsville", "Countryland", "09556789013", "tom.davis@example.com"));
+    phoneBookMap.put("09656789014", new PhoneBook(6, "Sara", "Miller", "987 Walnut St", "Villagetown", "Countryland", "09656789014", "sara.miller@example.com"));
   }
 }

@@ -19,11 +19,11 @@ import java.util.List;
 @Route("")
 public class MainView extends Div
 {
-  private Crud<PhoneBook> crud;
+  private final Crud<PhoneBook> crud;
 
-  private String FIRST_NAME = "firstName";
-  private String LAST_NAME = "lastName";
-  private String EMAIL = "email";
+  private final String FIRST_NAME = "firstName";
+  private final String LAST_NAME = "lastName";
+  private final String EMAIL = "email";
 
   public MainView()
   {
