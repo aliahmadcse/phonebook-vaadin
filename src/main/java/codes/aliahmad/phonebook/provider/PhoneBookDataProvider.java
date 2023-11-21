@@ -4,12 +4,14 @@ import codes.aliahmad.phonebook.data.DataService;
 import codes.aliahmad.phonebook.data.InMemoryDataService;
 import codes.aliahmad.phonebook.model.PhoneBook;
 import com.vaadin.flow.component.crud.CrudFilter;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.SortDirection;
 
 import java.lang.reflect.Field;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -125,10 +127,20 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
     {
       item.setId(dataService.findAll().stream().map(PhoneBook::getId).max(naturalOrder())
               .orElse(0) + 1);
+      item.setLastUpdatedAt(new Date());
       dataService.create(item);
     }
     else
     {
+      PhoneBook existingPhoneBook = dataService.findById(item.getId());
+
+      if (existingPhoneBook.getLastUpdatedAt().equals(item.getLastUpdatedAt())) {
+        Notification.show("No changes detected");
+      } else {
+        Notification.show("Changes detected");
+      }
+
+      item.setLastUpdatedAt(new Date());
       dataService.update(item);
     }
   }

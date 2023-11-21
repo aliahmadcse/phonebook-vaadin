@@ -105,6 +105,7 @@ public class MainView extends Div
   private void setupDataProvider()
   {
     crud.setDataProvider(dataProvider);
+
     crud.addDeleteListener(
             deleteEvent -> dataProvider.delete(deleteEvent.getItem()));
     crud.addSaveListener(
