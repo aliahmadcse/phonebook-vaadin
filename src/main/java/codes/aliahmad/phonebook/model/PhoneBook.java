@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PhoneBook
+public class PhoneBook implements Cloneable
 {
   private Integer id;
   private String firstName;
@@ -47,5 +47,18 @@ public class PhoneBook
   public int hashCode()
   {
     return Objects.hash(id);
+  }
+
+  @Override
+  public PhoneBook clone()
+  {
+    try
+    {
+      return (PhoneBook) super.clone();
+    }
+    catch (CloneNotSupportedException e)
+    {
+      throw new AssertionError();
+    }
   }
 }

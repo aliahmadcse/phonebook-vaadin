@@ -21,7 +21,7 @@ import static java.util.Comparator.naturalOrder;
 
 public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook, CrudFilter>
 {
-  private final DataService dataService = new InMemoryDataService();
+  private final static DataService dataService = new InMemoryDataService();
 
   private Consumer<Long> sizeChangeListener;
 
@@ -134,10 +134,8 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
     {
       PhoneBook existingPhoneBook = dataService.findById(item.getId());
 
-      if (existingPhoneBook.getLastUpdatedAt().equals(item.getLastUpdatedAt())) {
-        Notification.show("No changes detected");
-      } else {
-        Notification.show("Changes detected");
+      if (!existingPhoneBook.getLastUpdatedAt().equals(item.getLastUpdatedAt())) {
+        Notification.show("This data is updated by another user");
       }
 
       item.setLastUpdatedAt(new Date());
@@ -153,7 +151,9 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   public void delete(PhoneBook item)
   {
-    dataService.delete(item.getId());
+    if(dataService.delete(item.getId()) == null) {
+      Notification.show("This record was already deleted.");
+    }
   }
 
   public boolean isPhoneNumberValid(String phoneNumber, PhoneBook editingPhoneBook)

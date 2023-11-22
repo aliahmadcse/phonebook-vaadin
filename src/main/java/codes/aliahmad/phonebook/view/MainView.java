@@ -81,8 +81,9 @@ public class MainView extends Div
 
     // Open editor on double click
     grid.addItemDoubleClickListener(event -> {
-      editingPhoneBook = event.getItem();
-      crud.edit(event.getItem(), Crud.EditMode.EXISTING_ITEM);
+      PhoneBook phoneBookClone = event.getItem().clone();
+      editingPhoneBook = phoneBookClone;
+      crud.edit(phoneBookClone, Crud.EditMode.EXISTING_ITEM);
     });
 
     // Only show these columns (all columns shown by default):
@@ -108,8 +109,10 @@ public class MainView extends Div
 
     crud.addDeleteListener(
             deleteEvent -> dataProvider.delete(deleteEvent.getItem()));
-    crud.addSaveListener(
-            saveEvent -> dataProvider.persist(saveEvent.getItem()));
+
+    crud.addSaveListener(saveEvent -> {
+      dataProvider.persist(saveEvent.getItem());
+    });
   }
 
 }
