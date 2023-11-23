@@ -1,5 +1,7 @@
 package codes.aliahmad.phonebook.view;
 
+import codes.aliahmad.phonebook.data.DataService;
+import codes.aliahmad.phonebook.data.InMemoryDataService;
 import codes.aliahmad.phonebook.data.MySqlDataService;
 import codes.aliahmad.phonebook.model.PhoneBook;
 import codes.aliahmad.phonebook.provider.PhoneBookDataProvider;
@@ -27,6 +29,8 @@ public class MainView extends Div
 
   private final PhoneBookDataProvider dataProvider;
 
+  private final DataService dataService = MySqlDataService.getInstance();
+
   private PhoneBook editingPhoneBook;
 
   private final String FIRST_NAME = "firstName";
@@ -35,7 +39,7 @@ public class MainView extends Div
 
   public MainView()
   {
-    dataProvider = new PhoneBookDataProvider(MySqlDataService.getInstance());
+    dataProvider = new PhoneBookDataProvider(dataService);
 
     crud = new Crud<>(PhoneBook.class, createEditor());
 
@@ -71,7 +75,7 @@ public class MainView extends Div
             PhoneBook::setCountry);
 
     binder.forField(phone).asRequired()
-            .withValidator(phoneNumber -> ValidationUtil.isPhoneNumberValid(phoneNumber, editingPhoneBook), "Phone Number already exist")
+            .withValidator(phoneNumber -> ValidationUtil.isPhoneNumberValid(phoneNumber, editingPhoneBook, dataService), "Phone Number already exist")
             .bind(PhoneBook::getPhone, PhoneBook::setPhone);
 
     binder.forField(email).asRequired().bind(PhoneBook::getEmail,
@@ -86,10 +90,17 @@ public class MainView extends Div
 
     // Open editor on double click
     grid.addItemDoubleClickListener(event -> {
+
       PhoneBook phoneBookClone = event.getItem().clone();
       editingPhoneBook = phoneBookClone;
 
       PhoneBook existingPhoneBook = dataProvider.findById(editingPhoneBook.getId());
+
+      if (!ValidationUtil.validateDataDeletion(existingPhoneBook)){
+        refreshGrid();
+        return;
+      }
+
       ValidationUtil.validateDataEditing(editingPhoneBook, existingPhoneBook);
 
       crud.edit(phoneBookClone, Crud.EditMode.EXISTING_ITEM);
