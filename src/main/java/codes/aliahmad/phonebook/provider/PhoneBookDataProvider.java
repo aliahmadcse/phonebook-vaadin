@@ -20,9 +20,12 @@ import static java.util.Comparator.naturalOrder;
 
 public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook, CrudFilter>
 {
-  private final static DataService dataService = InMemoryDataService.getInstance();
+  private final DataService dataService;
 
-  private Consumer<Long> sizeChangeListener;
+  public PhoneBookDataProvider(DataService dataService)
+  {
+    this.dataService = dataService;
+  }
 
   @Override
   protected Stream<PhoneBook> fetchFromBackEnd(Query<PhoneBook, CrudFilter> query)
@@ -45,19 +48,9 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
   protected int sizeInBackEnd(Query<PhoneBook, CrudFilter> query)
   {
     long count = fetchFromBackEnd(query).count();
-
-    if (sizeChangeListener != null)
-    {
-      sizeChangeListener.accept(count);
-    }
-
     return (int) count;
   }
 
-  void setSizeChangeListener(Consumer<Long> listener)
-  {
-    sizeChangeListener = listener;
-  }
 
   private static Predicate<PhoneBook> predicate(CrudFilter filter)
   {
@@ -122,13 +115,16 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   public void persist(PhoneBook item)
   {
-    boolean existingItem = dataService.findById(item.getId()) != null;
+    boolean existingItem = false;
+    if (item.getId() != null)
+    {
+      existingItem = findById(item.getId()) != null;
+    }
 
     item.setLastUpdatedAt(new Date());
+
     if (!existingItem)
     {
-      item.setId(dataService.findAll().stream().map(PhoneBook::getId).max(naturalOrder())
-              .orElse(0) + 1);
       dataService.create(item);
     }
     else
@@ -139,8 +135,7 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   Optional<PhoneBook> find(Integer id)
   {
-    return dataService.findAll().stream().filter(entity -> entity.getId().equals(id))
-            .findFirst();
+    return Optional.of(dataService.findById(id));
   }
 
   public void delete(PhoneBook item)

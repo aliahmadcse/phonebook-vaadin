@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.util.Comparator.naturalOrder;
+
 public class InMemoryDataService implements DataService
 {
   private final Map<Integer, PhoneBook> phoneBookMap = new HashMap<>();
@@ -34,6 +36,8 @@ public class InMemoryDataService implements DataService
   @Override
   public PhoneBook create(PhoneBook phoneBook)
   {
+    phoneBook.setId(findAll().stream().map(PhoneBook::getId).max(naturalOrder())
+            .orElse(0) + 1);
     return phoneBookMap.putIfAbsent(phoneBook.getId(), phoneBook);
   }
 
@@ -56,15 +60,6 @@ public class InMemoryDataService implements DataService
 
     return phoneBooks.stream().anyMatch(phoneBook -> phoneBook.getPhone().equals(phoneNumber));
   }
-
-//  @Override
-//  public PhoneBook findByPhoneNumber(String phoneNumber)
-//  {
-//    List<PhoneBook> phoneBooks = findAll();
-//
-//    return phoneBooks.stream().filter(phoneBook -> phoneBook.getPhone().equals(phoneNumber))
-//            .findFirst().orElse(null);
-//  }
 
   @Override
   public boolean existsByPhoneNumberAndIdNot(String phoneNumber, Integer id)
