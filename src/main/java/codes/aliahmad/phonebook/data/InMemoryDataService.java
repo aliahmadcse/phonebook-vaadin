@@ -57,14 +57,14 @@ public class InMemoryDataService implements DataService
     return phoneBooks.stream().anyMatch(phoneBook -> phoneBook.getPhone().equals(phoneNumber));
   }
 
-  @Override
-  public PhoneBook findByPhoneNumber(String phoneNumber)
-  {
-    List<PhoneBook> phoneBooks = findAll();
-
-    return phoneBooks.stream().filter(phoneBook -> phoneBook.getPhone().equals(phoneNumber))
-            .findFirst().orElse(null);
-  }
+//  @Override
+//  public PhoneBook findByPhoneNumber(String phoneNumber)
+//  {
+//    List<PhoneBook> phoneBooks = findAll();
+//
+//    return phoneBooks.stream().filter(phoneBook -> phoneBook.getPhone().equals(phoneNumber))
+//            .findFirst().orElse(null);
+//  }
 
   @Override
   public boolean existsByPhoneNumberAndIdNot(String phoneNumber, Integer id)

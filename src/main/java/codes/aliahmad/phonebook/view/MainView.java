@@ -2,6 +2,7 @@ package codes.aliahmad.phonebook.view;
 
 import codes.aliahmad.phonebook.model.PhoneBook;
 import codes.aliahmad.phonebook.provider.PhoneBookDataProvider;
+import codes.aliahmad.phonebook.provider.PhoneBookMySqlDataProvider;
 import codes.aliahmad.phonebook.util.ValidationUtil;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -24,7 +25,7 @@ public class MainView extends Div
 
   private Grid<PhoneBook> grid;
 
-  private final PhoneBookDataProvider dataProvider;
+  private final PhoneBookMySqlDataProvider dataProvider;
 
   private PhoneBook editingPhoneBook;
 
@@ -34,7 +35,7 @@ public class MainView extends Div
 
   public MainView()
   {
-    dataProvider = new PhoneBookDataProvider();
+    dataProvider = new PhoneBookMySqlDataProvider();
     crud = new Crud<>(PhoneBook.class, createEditor());
 
     setupGrid();
