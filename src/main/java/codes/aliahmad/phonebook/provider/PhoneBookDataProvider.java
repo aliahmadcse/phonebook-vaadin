@@ -4,7 +4,6 @@ import codes.aliahmad.phonebook.data.DataService;
 import codes.aliahmad.phonebook.data.InMemoryDataService;
 import codes.aliahmad.phonebook.model.PhoneBook;
 import com.vaadin.flow.component.crud.CrudFilter;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -21,7 +20,7 @@ import static java.util.Comparator.naturalOrder;
 
 public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook, CrudFilter>
 {
-  private final static DataService dataService = new InMemoryDataService();
+  private final static DataService dataService = InMemoryDataService.getInstance();
 
   private Consumer<Long> sizeChangeListener;
 
@@ -45,7 +44,6 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
   @Override
   protected int sizeInBackEnd(Query<PhoneBook, CrudFilter> query)
   {
-    // For RDBMS just execute a SELECT COUNT(*) ... WHERE query
     long count = fetchFromBackEnd(query).count();
 
     if (sizeChangeListener != null)
@@ -63,7 +61,6 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   private static Predicate<PhoneBook> predicate(CrudFilter filter)
   {
-    // For RDBMS just generate a WHERE clause
     return filter.getConstraints().entrySet().stream()
             .map(constraint -> (Predicate<PhoneBook>) person -> {
               try
@@ -82,7 +79,6 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   private static Comparator<PhoneBook> comparator(CrudFilter filter)
   {
-    // For RDBMS just generate an ORDER BY clause
     return filter.getSortOrders().entrySet().stream().map(sortClause -> {
       try
       {
@@ -119,26 +115,24 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
     }
   }
 
+  public PhoneBook findById(Integer id)
+  {
+    return dataService.findById(id);
+  }
+
   public void persist(PhoneBook item)
   {
-    boolean existingItem = item.getId() != null;
+    boolean existingItem = dataService.findById(item.getId()) != null;
 
+    item.setLastUpdatedAt(new Date());
     if (!existingItem)
     {
       item.setId(dataService.findAll().stream().map(PhoneBook::getId).max(naturalOrder())
               .orElse(0) + 1);
-      item.setLastUpdatedAt(new Date());
       dataService.create(item);
     }
     else
     {
-      PhoneBook existingPhoneBook = dataService.findById(item.getId());
-
-      if (!existingPhoneBook.getLastUpdatedAt().equals(item.getLastUpdatedAt())) {
-        Notification.show("This data is updated by another user");
-      }
-
-      item.setLastUpdatedAt(new Date());
       dataService.update(item);
     }
   }
@@ -151,17 +145,7 @@ public class PhoneBookDataProvider extends AbstractBackEndDataProvider<PhoneBook
 
   public void delete(PhoneBook item)
   {
-    if(dataService.delete(item.getId()) == null) {
-      Notification.show("This record was already deleted.");
-    }
+    dataService.delete(item.getId());
   }
 
-  public boolean isPhoneNumberValid(String phoneNumber, PhoneBook editingPhoneBook)
-  {
-    if (editingPhoneBook == null)
-    {
-      return !dataService.existsByPhoneNumber(phoneNumber);
-    }
-    return !dataService.existsByPhoneNumberAndIdNot(phoneNumber, editingPhoneBook.getId());
-  }
 }

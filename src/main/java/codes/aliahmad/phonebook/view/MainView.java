@@ -2,6 +2,7 @@ package codes.aliahmad.phonebook.view;
 
 import codes.aliahmad.phonebook.model.PhoneBook;
 import codes.aliahmad.phonebook.provider.PhoneBookDataProvider;
+import codes.aliahmad.phonebook.util.ValidationUtil;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
@@ -20,6 +21,9 @@ import java.util.List;
 public class MainView extends Div
 {
   private final Crud<PhoneBook> crud;
+
+  private Grid<PhoneBook> grid;
+
   private final PhoneBookDataProvider dataProvider;
 
   private PhoneBook editingPhoneBook;
@@ -64,9 +68,8 @@ public class MainView extends Div
     binder.forField(country).asRequired().bind(PhoneBook::getCountry,
             PhoneBook::setCountry);
 
-//    take the validation logic into a separate class
     binder.forField(phone).asRequired()
-            .withValidator(phoneNumber -> dataProvider.isPhoneNumberValid(phoneNumber, editingPhoneBook), "Phone Number already exist")
+            .withValidator(phoneNumber -> ValidationUtil.isPhoneNumberValid(phoneNumber, editingPhoneBook), "Phone Number already exist")
             .bind(PhoneBook::getPhone, PhoneBook::setPhone);
 
     binder.forField(email).asRequired().bind(PhoneBook::getEmail,
@@ -77,16 +80,20 @@ public class MainView extends Div
 
   private void setupGrid()
   {
-    Grid<PhoneBook> grid = crud.getGrid();
+    grid = crud.getGrid();
 
     // Open editor on double click
     grid.addItemDoubleClickListener(event -> {
       PhoneBook phoneBookClone = event.getItem().clone();
       editingPhoneBook = phoneBookClone;
+
+      PhoneBook existingPhoneBook = dataProvider.findById(editingPhoneBook.getId());
+      ValidationUtil.validateDataEditing(editingPhoneBook, existingPhoneBook);
+
       crud.edit(phoneBookClone, Crud.EditMode.EXISTING_ITEM);
     });
 
-    // Only show these columns (all columns shown by default):
+
     List<String> visibleColumns = Arrays.asList(FIRST_NAME, LAST_NAME,
             EMAIL);
 
@@ -98,7 +105,6 @@ public class MainView extends Div
       }
     });
 
-    // Reorder the columns (alphabetical by default)
     grid.setColumnOrder(grid.getColumnByKey(FIRST_NAME),
             grid.getColumnByKey(LAST_NAME), grid.getColumnByKey(EMAIL));
   }
@@ -113,6 +119,11 @@ public class MainView extends Div
     crud.addSaveListener(saveEvent -> {
       dataProvider.persist(saveEvent.getItem());
     });
+  }
+
+  private void refreshGrid()
+  {
+    grid.getDataProvider().refreshAll();
   }
 
 }

@@ -12,7 +12,9 @@ public class InMemoryDataService implements DataService
 {
   private final Map<Integer, PhoneBook> phoneBookMap = new HashMap<>();
 
-  public InMemoryDataService()
+  private static InMemoryDataService instance;
+
+  private InMemoryDataService()
   {
     initialize();
   }
@@ -71,6 +73,16 @@ public class InMemoryDataService implements DataService
 
     return phoneBooks.stream()
             .anyMatch(phoneBook -> phoneBook.getPhone().equals(phoneNumber) && !Objects.equals(phoneBook.getId(), id));
+  }
+
+  public static DataService getInstance()
+  {
+    if (instance == null)
+    {
+      instance = new InMemoryDataService();
+    }
+
+    return instance;
   }
 
   public void initialize()
