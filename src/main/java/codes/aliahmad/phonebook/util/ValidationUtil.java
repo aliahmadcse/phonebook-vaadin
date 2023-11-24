@@ -21,7 +21,7 @@ public class ValidationUtil
   {
     if (existingPhoneBook == null)
     {
-      Notification.show("This record has been already deleted by some other user.",
+      Notification.show("This record was deleted by some other user.",
               5000, Notification.Position.TOP_CENTER);
       return false;
     }
