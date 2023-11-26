@@ -29,7 +29,7 @@ public class MainView extends Div
 
   private final PhoneBookDataProvider dataProvider;
 
-  private final DataService dataService = MySqlDataService.getInstance();
+  private final DataService dataService = InMemoryDataService.getInstance();
 
   private PhoneBook editingPhoneBook;
 

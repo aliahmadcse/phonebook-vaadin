@@ -118,6 +118,8 @@ public class MySqlDataService implements DataService
     {
       String query = "INSERT INTO phonebook (firstName, lastName, street, city, country, phone, email, lastUpdatedAt) " +
               "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+      connection.setAutoCommit(false);
       PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
       // Set parameters for the INSERT query
@@ -140,6 +142,8 @@ public class MySqlDataService implements DataService
           int generatedId = generatedKeys.getInt(1);
           phoneBook.setId(generatedId);
         }
+        connection.commit();
+        connection.setAutoCommit(true);
         return phoneBook;
       }
       else
@@ -162,6 +166,8 @@ public class MySqlDataService implements DataService
       PhoneBook phoneBook = findById(id);
 
       String query = "DELETE FROM phonebook WHERE id=?";
+
+      connection.setAutoCommit(false);
       PreparedStatement preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, id);
 
@@ -169,12 +175,15 @@ public class MySqlDataService implements DataService
 
       if (affectedRows > 0)
       {
+        connection.commit();
+        connection.setAutoCommit(true);
         return phoneBook;
       }
       else
       {
         return null;
       }
+
     }
     catch (SQLException e)
     {
@@ -189,6 +198,8 @@ public class MySqlDataService implements DataService
     try
     {
       String query = "UPDATE phonebook SET firstName=?, lastName=?, street=?, city=?, country=?, phone=?, email=?, lastUpdatedAt=? WHERE id=?";
+
+      connection.setAutoCommit(false);
       PreparedStatement preparedStatement = connection.prepareStatement(query);
 
       preparedStatement.setString(1, phoneBook.getFirstName());
@@ -205,6 +216,8 @@ public class MySqlDataService implements DataService
 
       if (affectedRows > 0)
       {
+        connection.commit();
+        connection.setAutoCommit(true);
         return phoneBook;
       }
       else

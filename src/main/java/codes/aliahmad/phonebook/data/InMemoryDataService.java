@@ -7,12 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Comparator.naturalOrder;
 
 public class InMemoryDataService implements DataService
 {
-  private final Map<Integer, PhoneBook> phoneBookMap = new HashMap<>();
+  private final Map<Integer, PhoneBook> phoneBookMap = new ConcurrentHashMap<>();
 
   private static InMemoryDataService instance;
 
