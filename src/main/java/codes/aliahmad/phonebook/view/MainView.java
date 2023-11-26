@@ -96,7 +96,8 @@ public class MainView extends Div
 
       PhoneBook existingPhoneBook = dataProvider.findById(editingPhoneBook.getId());
 
-      if (!ValidationUtil.validateDataDeletion(existingPhoneBook)){
+      if (!ValidationUtil.validateDataDeletion(existingPhoneBook))
+      {
         refreshGrid();
         return;
       }
@@ -131,6 +132,11 @@ public class MainView extends Div
 
     crud.addSaveListener(saveEvent -> {
       dataProvider.persist(saveEvent.getItem());
+      editingPhoneBook = null;
+    });
+
+    crud.addCancelListener(cancelEvent -> {
+      editingPhoneBook = null;
     });
   }
 
